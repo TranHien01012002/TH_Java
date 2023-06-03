@@ -58,4 +58,33 @@ public class BookController {
         }
         return "redirect:/books";
     }
+    @GetMapping("/edit/{id}")
+    public String editBookForm(@PathVariable("id") Long id, Model model) {
+        Book book = bookService.getBookById(id);
+        if (book != null) {
+            model.addAttribute("book", book);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "book/edit";
+        } else {
+            return "redirect:/books";
+        }
+    }
+    @PostMapping("/edit")
+    public String editBook(@ModelAttribute("book") Book updatedBook) {
+        Long bookId = updatedBook.getId();
+
+        if (bookId != null) {
+            Book existingBook = bookService.getBookById(bookId);
+
+            if (existingBook != null) {
+                existingBook.setTitle(updatedBook.getTitle());
+                existingBook.setAuthor(updatedBook.getAuthor());
+                existingBook.setPrice(updatedBook.getPrice());
+                existingBook.setCategory(updatedBook.getCategory());
+                bookService.updateBook(existingBook);
+            }
+        }
+
+        return "redirect:/books";
+    }
 }
